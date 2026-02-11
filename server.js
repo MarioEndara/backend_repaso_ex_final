@@ -5,12 +5,17 @@ const cors = require('cors');
 const connectDB = require('./config/basedatos');
 const authRoutes = require('./routes/authRoutes');
 const usuariosRutas = require('./routes/usuariosRoutes');
+const crearAdminDefault = require('./utils/createAdmin');
+
 
 // Cargar variables de entorno
 dotenv.config();
 
-// Conectar a la DB
-connectDB();
+
+// Conexion con la base de datos y creación de admin por defecto
+connectDB().then(() => {
+    crearAdminDefault();
+});
 
 const app = express();
 
