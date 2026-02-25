@@ -29,6 +29,7 @@ app.use('/api', authRoutes);
 // Rutas
 app.use('/api/usuarios', usuariosRutas);
 app.use('/api/materias', require('./routes/materiaRoutes'));
+app.use('/api/estudiantes', require('./routes/estudianteRoutes'));
 
 // El puerto para Render [cite: 199]
 const PORT = process.env.PORT || 5000;

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const studentSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
-    cedula: { type: String, required: true },
+    cedula: { type: String, required: true, unique: true },
     fecha_nacimiento: { type: String },
     ciudad: { type: String },
     direccion: { type: String },

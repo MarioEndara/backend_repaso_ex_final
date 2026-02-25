@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuarios');
+const jwt = require('jsonwebtoken');
 
 // Función para registrar un nuevo usuario
 const registrarUsuario = async (req, res) => {
@@ -13,23 +14,40 @@ const registrarUsuario = async (req, res) => {
         res.status(400).json({ msg: "Error al registrar usuario", error });
     }
 };
-
 const login = async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        const usuario = await Usuario.findOne({ email });
-        
-        // Validación exacta según la guía 
-        if (usuario && usuario.password === password) {
-            res.status(200).json({
-                msg: `Bienvenido - ${usuario.nombre}`, // 
-                user: usuario
-            });
-        } else {
-            res.status(401).json({ msg: "Usuario o contraseña incorrectos." });
-        }
+        // 1. Buscar el usuario
+        let usuario = await Usuario.findOne({ email });
+        if (!usuario) return res.status(400).json({ msg: "Usuario no existe" });
+
+        // 2. Verificar contraseña
+        if (usuario.password !== password) return res.status(400).json({ msg: "Password incorrecto" });
+
+        // 3. Token
+        const payload = {
+            usuario: { id: usuario.id }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET || 'palabraSecreta',
+            { expiresIn: '8h' },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ 
+                    token,
+                    user: {
+                        nombre: usuario.nombre,
+                        email: usuario.email
+                    }
+                });
+            }
+        );
+
     } catch (error) {
-        res.status(500).json({ msg: "Error en el servidor" });
+        res.status(500).send('Error en el servidor');
     }
 };
 
